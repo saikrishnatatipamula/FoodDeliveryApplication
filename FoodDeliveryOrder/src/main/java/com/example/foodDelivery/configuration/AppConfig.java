@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class AppConfig
 {
-	@Value("${transaction.service.doTransaction.url}")
+	@Value("${payment.service.doTransaction.url}")
 	public String doTransactionURL;
 
     @Bean

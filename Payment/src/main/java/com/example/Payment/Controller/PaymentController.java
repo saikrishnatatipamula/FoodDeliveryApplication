@@ -22,7 +22,7 @@ public class PaymentController
 	public Transaction doTransaction(@RequestBody Transaction transaction)
 	{
 		System.out.println("Entered doTransactionapi");
-		return paymentservice.processTransaction(transaction);
+		return paymentservice.doTransaction(transaction);
 	}
 	
 	  @PostMapping("/confirmTransaction")

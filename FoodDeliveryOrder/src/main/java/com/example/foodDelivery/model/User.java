@@ -1,25 +1,18 @@
 package com.example.foodDelivery.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 
 
-@Entity
 public class User 
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   
     private Long id;
     
     private String username;
 
     private String password;
 
-    @Column(unique = true) // Ensures the email column is unique
+   
     private String email;
 
     private boolean confirmed;
@@ -27,6 +20,7 @@ public class User
 	public Long getId() {
 		return id;
 	}
+	
 
 	public void setId(Long id) {
 		this.id = id;
@@ -61,6 +55,9 @@ public class User
 	}
 
 	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
+	}
+	public void getConfirmed(boolean confirmed) {
 		this.confirmed = confirmed;
 	}
 

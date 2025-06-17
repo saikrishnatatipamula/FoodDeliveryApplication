@@ -36,13 +36,13 @@ public class PaymentService {
    	//private final String otpServiceBaseUrl = "http://localhost:8081/api/createOTP"; // OTPService URL
 	//private final String orderServiceUrl= "http://localhost:8083/api"; //OrderServiceURL
 
-	public Transaction processTransaction(Transaction transaction) {
+	public Transaction doTransaction(Transaction transaction) {
 		// Make a REST Call
 		ResponseEntity<User> userResponse = null;
 		String email = null;
 		try {
 			
-			System.out.println("entered process Transaction");
+			System.out.println("entered doTransaction");
 			UriComponentsBuilder uriBuilder1 = UriComponentsBuilder.fromHttpUrl(getUserUrl)
 	                .queryParam("userId", transaction.getUserId());
 			
@@ -113,22 +113,32 @@ public class PaymentService {
 
 	public String confirmTransaction(long otpId) {
 		// TODO Auto-generated method stub
-		Transaction transaction = paymentRepository.findByAuthenticationId(otpId);
-		
-		transaction.setStatus(PaymentUtils.TransactionStatus.SUCCESS.toString());
-		transaction.setDescription("Transaction Successful");
-		
-		paymentRepository.save(transaction);
-		
-		
-		/// Make a call to Order Service to confirmOrder by trasnactionId
-		//String getConfirmOrderURL = orderServiceUrl+"/confirmOrder/" + transaction.getTransactionId();
-		
-		UriComponentsBuilder uriBuilder5 = UriComponentsBuilder.fromHttpUrl(confirmOrderurl)
-                .queryParam("transactionId", transaction.getTransactionId());	
-		
-		ResponseEntity<String> orderResponse= restTemplate.postForEntity(uriBuilder5.build().toUri(), null, String.class);
-	
+		try {
+			
+			System.out.println("Entered Try block");
+			Transaction transaction = paymentRepository.findByAuthenticationId(otpId);
+			
+			transaction.setStatus(PaymentUtils.TransactionStatus.SUCCESS.toString());
+			transaction.setDescription("Transaction Successful");
+			
+			System.out.println("Before Save of Transaction : "+ transaction);
+			paymentRepository.save(transaction);
+			System.out.println("After Save of Transaction : " + transaction);
+			
+			
+			/// Make a call to Order Service to confirmOrder by trasnactionId
+			//String getConfirmOrderURL = orderServiceUrl+"/confirmOrder/" + transaction.getTransactionId();
+			
+			UriComponentsBuilder uriBuilder5 = UriComponentsBuilder.fromHttpUrl(confirmOrderurl)
+			        .queryParam("transactionId", transaction.getTransactionId());	
+			
+			ResponseEntity<String> orderResponse= restTemplate.postForEntity(uriBuilder5.build().toUri(), null, String.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Exception in confirmTransaction: " + e);
+			
+			return "Exception in confirmtransaction";
+		}
 		
 		
 		return "Transaction Successful";

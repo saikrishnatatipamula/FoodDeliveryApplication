@@ -1,0 +1,16 @@
+----------------------------------------------------------------
+Sat Jun 14 15:11:06 IST 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-0197-6dd0-7217-000001ede440 
+on database directory memory:C:\Users\admin\git\repository\FoodDeliveryOrder\d2d6a68b-0bd3-4530-a9ae-f17513f78ba6 with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@76ed5528 
+Loaded from file:/C:/Users/admin/.m2/repository/org/apache/derby/derby/10.16.1.1/derby-10.16.1.1.jar
+java.vendor=Oracle Corporation
+java.runtime.version=22.0.2+9-70
+user.dir=C:\Users\admin\git\repository\FoodDeliveryOrder
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Sat Jun 14 15:11:08 IST 2025:
+Shutting down instance a816c00e-0197-6dd0-7217-000001ede440 on database directory memory:C:\Users\admin\git\repository\FoodDeliveryOrder\d2d6a68b-0bd3-4530-a9ae-f17513f78ba6 with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@76ed5528 

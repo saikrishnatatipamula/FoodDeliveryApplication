@@ -30,6 +30,8 @@ public class OtpController {
 
     @PostMapping("/validateOTP")
     public ResponseEntity<String> validateOTP(@RequestParam long otpId, @RequestParam String otpCode) {
+    	
+    	System.out.println("Entered Controller");
         String isValid = otpService.validateOTP(otpId, otpCode);
         return ResponseEntity.ok(isValid);
     }

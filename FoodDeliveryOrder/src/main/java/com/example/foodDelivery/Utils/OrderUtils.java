@@ -4,7 +4,7 @@ public class OrderUtils
 {
 	public enum orderStatus
 	{
-		INITIATED,ORDER_PLACED,CANCELLED,FAILED,COMPLETED
+		REQUESTED, DECLINED, PAYMENT_INITIATED, ORDER_PLACED, USER_CANCELLED, FAILED
 	}
 	
 	public enum TransactionStatus {

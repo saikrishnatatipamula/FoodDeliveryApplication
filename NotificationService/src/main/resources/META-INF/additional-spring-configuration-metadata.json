@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "practice.kafka.topic",
+    "type": "java.lang.String",
+    "description": "A description for 'practice.kafka.topic'"
+  },
+  {
+    "name": "practice.kafka.topicsms",
+    "type": "java.lang.String",
+    "description": "A description for 'practice.kafka.topicsms'"
+  }
+]}

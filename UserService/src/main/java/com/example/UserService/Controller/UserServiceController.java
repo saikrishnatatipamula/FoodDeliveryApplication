@@ -3,13 +3,13 @@ package com.example.UserService.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.UserService.Controller.Request.SignUpRequest;
 import com.example.UserService.model.User;
 import com.example.UserService.service.UserService;
 
@@ -21,9 +21,9 @@ public class UserServiceController {
     private UserService userService;
 
     @PostMapping("/signupUser")
-    public ResponseEntity<String> signupUser(@RequestBody User user) {
-    	System.out.println("signup request: " + user);
-        String createdUser = userService.SignUpUser(user);
+    public ResponseEntity<String> signupUser(@RequestBody SignUpRequest request) {
+    	System.out.println("signup request: " + request);
+        String createdUser = userService.SignUpUser(request);
         return ResponseEntity.ok(createdUser);
     }
 
@@ -41,6 +41,15 @@ public class UserServiceController {
     	ResponseEntity<User> response = userService.getUser(userId);
     	System.out.println("getuser response: " + response);
     	return response;
+    }
+    
+    @GetMapping("/isUserEligible")
+    public ResponseEntity<Boolean> isUserEligible(@RequestParam long userId)
+    {
+    	boolean eligible = userService.isUserEligible(userId);
+    	
+    	return ResponseEntity.ok(eligible);
+    	
     }
 
     

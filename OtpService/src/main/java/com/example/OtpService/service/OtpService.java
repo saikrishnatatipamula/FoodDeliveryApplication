@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.OtpService.Kafka.KafkaProducer;
 import com.example.OtpService.Repository.OtpRepository;
 import com.example.OtpService.Utils.OtpUtils;
 import com.example.OtpService.Utils.OtpUtils.OtpTypes;
@@ -17,6 +18,9 @@ import com.example.OtpService.model.Otp;
 
 @Service
 public class OtpService {
+	
+	@Autowired
+	private KafkaProducer kafkaProducer;
 
     @Autowired
     private OtpRepository otpRepository;
@@ -39,58 +43,59 @@ public class OtpService {
         otp.setOtpCode(OtpUtils.generateOtp());
         otp.setType(otpType);
         otp.setExpirationTime(OtpUtils.generateExpiry(OtpUtils.FIVE_MINUTES));
-        return otpRepository.save(otp);
+        Otp otpCreated = otpRepository.save(otp);
+        kafkaProducer.sendMessage("OTP created for email: " + email + " OTP: " + otpCreated.getOtpCode());
+        
+        return otpCreated;
     }
 
     public String validateOTP(long otpId, String otpCode) {
-        
+        System.out.println("Entered validateOtp Method");
     	Optional<Otp> otpOptional = otpRepository.findById(otpId);
-    	Otp otpResponse = otpOptional.get();
+    	Otp otpDetails = otpOptional.get();
     	
-    	System.out.println("Otp :"+otpResponse);
-        
-        if (otpResponse == null)
-        {
+    	System.out.println(otpOptional);
+        if (otpDetails == null) {
             return "Otp Not found for Id : "+ otpId;
         }
-        else if (otpResponse.getOtpCode().equals(otpCode)&& otpResponse.getExpirationTime().isAfter(LocalDateTime.now()))
+        
+        else if (otpDetails.getOtpCode().equals(otpCode) && LocalDateTime.now().isBefore(otpDetails.getExpirationTime()))
         {
-        	if (otpResponse.getType().toString().equalsIgnoreCase(OtpUtils.OtpTypes.REGISTRATION.toString())) {
+        	if (otpDetails.getType().toString().equalsIgnoreCase(OtpUtils.OtpTypes.REGISTRATION.toString())) {
         		//String confirmedUserUrl = userServiceBaseUrl +"/confirmUser/"+otp.getEmail();
         		
         		 UriComponentsBuilder uriBuilder3 = UriComponentsBuilder.fromHttpUrl(confirmUserServiceUrl)
-        	                .queryParam("email", otpResponse.getEmail());
+        	                .queryParam("email", otpDetails.getEmail());
   
         	//	ResponseEntity<String> confirmUserResponse = restTemplate.postForEntity(confirmedUserUrl, null, String.class);
         		 
         		 ResponseEntity<String> confirmUserResponse=restTemplate.postForEntity(uriBuilder3.build().toUri(), null, String.class);
-        		return "Otp verified Successfully For Registration: "+ otpResponse.getEmail();
+        		return "Otp verified Successfully For Registration: "+ otpDetails.getEmail();
         		
-        	} else if (otpResponse.getType().toString().equalsIgnoreCase(OtpUtils.OtpTypes.TRANSACTION.toString())){
+        	} else if (otpDetails.getType().toString().equalsIgnoreCase(OtpUtils.OtpTypes.TRANSACTION.toString())){
         		
         		//String confirmedUserUrl = paymentServiceBaseUrl +"/confirmTransaction/"+otpResponse.getId();
         		
         		UriComponentsBuilder uriBuilder4 = UriComponentsBuilder.fromHttpUrl(confirmTransactionUrl)
-                        .queryParam("otpId", otpResponse.getId());
+                        .queryParam("otpId", otpDetails.getId());
 
         		  
         		//ResponseEntity<String> confirmUserResponse = restTemplate.postForEntity(confirmedUserUrl, null, String.class);
-        		ResponseEntity<String> confirmUserResponse =restTemplate.postForEntity(uriBuilder4.build().toUri(),null,String.class);
+        		ResponseEntity<String> confirmUserResponse = restTemplate.postForEntity(uriBuilder4.build().toUri(),null,String.class);
         		return "Otp verified Successfully For Transaction";
-        		
-        		
 				
 			} else {
 				return "Invalid OtpType";
 			}
         		
         }
-        else if (!otpResponse.getOtpCode().equals(otpCode))
+        else if (!otpDetails.getOtpCode().equals(otpCode))
         {
         	return "Otp Doesnot Match";
         }
-        else if(!otpResponse.getExpirationTime().isAfter(LocalDateTime.now()))
+        else if(!otpDetails.getExpirationTime().isAfter(LocalDateTime.now()))
         {
+        	kafkaProducer.sendMessage("User OTP expired, please regenerateOTP");
         	return " Otp Expired";
         }
         else
@@ -107,6 +112,7 @@ public class OtpService {
 		fetchedOtp.setExpirationTime(OtpUtils.generateExpiry(expiryInMinutes));
 		
 		Otp regeneratedOtp = otpRepository.save(fetchedOtp);
+		kafkaProducer.sendMessage("OTP regenerated for email: " + email + " OTP: " + regeneratedOtp.getOtpCode());
 		return "OTP regenerated successfully. OTP: " + regeneratedOtp.getOtpCode();
 	}
 	

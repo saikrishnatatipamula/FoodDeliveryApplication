@@ -1,30 +1,44 @@
 package com.example.UserService.model;
 
-
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
-
+import jakarta.persistence.PrePersist;
 
 @Entity
-public class User 
-{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String username;
+public class User {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String password;
+	private String username;
 
-    @Column(unique = true) // Ensures the email column is unique
-    private String email;
+	private String password;
 
-    private boolean confirmed;
+	@Column(unique = true) // Ensures the email column is unique
+	private String email;
+
+	private boolean confirmed;
+
+	@Column(name = "sign_up_time", nullable = false, updatable = false)
+	private LocalDateTime signUpTime;
+
+	@PrePersist
+	protected void onCreate() {
+		this.signUpTime = LocalDateTime.now();
+	}
+
+	public LocalDateTime getSignUpTime() {
+		return signUpTime;
+	}
+
+	public void setSignUpTime(LocalDateTime signUpTime) {
+		this.signUpTime = signUpTime;
+	}
 
 	public Long getId() {
 		return id;
@@ -69,12 +83,7 @@ public class User
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email
-				+ ", confirmed=" + confirmed + "]";
+				+ ", confirmed=" + confirmed + ", signUpTime=" + signUpTime + "]";
 	}
 
-    
-    
-    
 }
-
-
